@@ -20,16 +20,16 @@ import me.zhyd.oauth.enums.scope.AuthGiteeScope;
 import me.zhyd.oauth.enums.scope.AuthGithubScope;
 import me.zhyd.oauth.enums.scope.AuthGitlabScope;
 import me.zhyd.oauth.enums.scope.AuthGoogleScope;
-import me.zhyd.oauth.enums.scope.AuthHuaweiScope;
 import me.zhyd.oauth.enums.scope.AuthMicrosoftScope;
 import me.zhyd.oauth.enums.scope.AuthWeiboScope;
 import me.zhyd.oauth.exception.AuthException;
 import me.zhyd.oauth.model.AuthUser;
-import me.zhyd.oauth.request.AuthAlipayRequest;
+import me.zhyd.oauth.request.AuthAlipayCertRequest;
+// import me.zhyd.oauth.request.AuthAlipayRequest;
 import me.zhyd.oauth.request.AuthAliyunRequest;
 import me.zhyd.oauth.request.AuthBaiduRequest;
 import me.zhyd.oauth.request.AuthCodingRequest;
-import me.zhyd.oauth.request.AuthCsdnRequest;
+// import me.zhyd.oauth.request.AuthCsdnRequest;
 import me.zhyd.oauth.request.AuthDingTalkRequest;
 import me.zhyd.oauth.request.AuthDouyinRequest;
 import me.zhyd.oauth.request.AuthElemeRequest;
@@ -39,7 +39,7 @@ import me.zhyd.oauth.request.AuthGiteeRequest;
 import me.zhyd.oauth.request.AuthGithubRequest;
 import me.zhyd.oauth.request.AuthGitlabRequest;
 import me.zhyd.oauth.request.AuthGoogleRequest;
-import me.zhyd.oauth.request.AuthHuaweiRequest;
+import me.zhyd.oauth.request.AuthHuaweiV3Request;
 import me.zhyd.oauth.request.AuthKujialeRequest;
 import me.zhyd.oauth.request.AuthLinkedinRequest;
 import me.zhyd.oauth.request.AuthMeituanRequest;
@@ -61,6 +61,8 @@ import me.zhyd.oauth.request.AuthWeChatOpenRequest;
 import me.zhyd.oauth.request.AuthWeiboRequest;
 import me.zhyd.oauth.request.AuthXmlyRequest;
 import me.zhyd.oauth.utils.AuthScopeUtils;
+import com.alipay.api.AlipayConfig;
+
 
 @Service
 public class OAuthServiceImpl implements OAuthService {
@@ -167,13 +169,23 @@ public class OAuthServiceImpl implements OAuthService {
                         .build());
                 break;
             case "alipay":
-                // 支付宝在创建回调地址时，不允许使用localhost或者127.0.0.1，所以这儿的回调地址使用的局域网内的ip
-                authRequest = new AuthAlipayRequest(AuthConfig.builder()
-                        .clientId("APPID")
-                        .clientSecret("应用私钥")
-                        .alipayPublicKey("支付宝公钥")
-                        .redirectUri("https://www.zhyd.me/oauth/callback/alipay")
-                        .build());
+                AlipayConfig alipayConfig = new AlipayConfig();
+                alipayConfig.setAppId("支付宝应用的ID");
+                alipayConfig.setPrivateKey("支付宝密钥工具本地创建的应用私钥");
+                alipayConfig.setAppCertContent("支付宝平台根据csr生成的appCertPublicKey_xxx.crt文件内容");
+                alipayConfig.setRootCertContent("支付宝平台根据csr生成的alipayRootCert.crt文件内容");
+                alipayConfig.setAlipayPublicCertContent("支付宝平台根据csr生成的alipayCertPublicKey_RSA2.crt文件内容");
+                authRequest = new AuthAlipayCertRequest(AuthConfig.builder()
+                        .clientId("支付宝应用的ID")
+                        .clientSecret("支付宝密钥工具本地创建的应用私钥")
+                        .redirectUri("回调地址")
+                        .build(), alipayConfig);
+                /* authRequest = new AuthAlipayRequest(AuthConfig.builder()
+                   .clientId("APPID")
+                   .clientSecret("应用私钥")
+                   .alipayPublicKey("支付宝公钥")
+                   .redirectUri("https://www.zhyd.me/oauth/callback/alipay")
+                   .build()); */
                 break;
             case "qq":
                 authRequest = new AuthQqRequest(AuthConfig.builder()
@@ -189,13 +201,13 @@ public class OAuthServiceImpl implements OAuthService {
                         .redirectUri("http://www.zhyd.me/oauth/callback/wechat")
                         .build());
                 break;
-            case "csdn":
+            /* case "csdn":
                 authRequest = new AuthCsdnRequest(AuthConfig.builder()
                         .clientId("")
                         .clientSecret("")
                         .redirectUri("http://dblog-web.zhyd.me/oauth/callback/csdn")
                         .build());
-                break;
+                break; */
             case "taobao":
                 authRequest = new AuthTaobaoRequest(AuthConfig.builder()
                         .clientId("")
@@ -311,16 +323,12 @@ public class OAuthServiceImpl implements OAuthService {
                         .build());
                 break;
             case "huawei":
-                authRequest = new AuthHuaweiRequest(AuthConfig.builder()
-                        .clientId("")
-                        .clientSecret("")
-                        .redirectUri("http://127.0.0.1:8443/oauth/callback/huawei")
-                        .scopes(Arrays.asList(
-                                AuthHuaweiScope.BASE_PROFILE.getScope(),
-                                AuthHuaweiScope.MOBILE_NUMBER.getScope(),
-                                AuthHuaweiScope.ACCOUNTLIST.getScope(),
-                                AuthHuaweiScope.SCOPE_DRIVE_FILE.getScope(),
-                                AuthHuaweiScope.SCOPE_DRIVE_APPDATA.getScope()))
+                authRequest = new AuthHuaweiV3Request(AuthConfig.builder()
+                        .clientId("API ID")
+                        .clientSecret("APP Secret")
+                        .redirectUri("应用回调地址")
+                        // 可选择是否开启 pkce 模式
+                        .pkce(true)
                         .build());
                 break;
             case "wechat_enterprise":

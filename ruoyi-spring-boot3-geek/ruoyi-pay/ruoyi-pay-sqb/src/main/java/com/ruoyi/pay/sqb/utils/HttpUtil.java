@@ -118,11 +118,9 @@ public class HttpUtil {
             else
                 httpRequst.abort();
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             result = e.getMessage().toString();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             result = e.getMessage().toString();
         }

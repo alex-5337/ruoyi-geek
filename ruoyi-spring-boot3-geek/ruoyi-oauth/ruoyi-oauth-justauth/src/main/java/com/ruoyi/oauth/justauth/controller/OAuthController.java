@@ -55,7 +55,7 @@ public class OAuthController extends BaseController {
             HttpServletRequest request) {
         logger.info("进入callback：" + source + " callback params：" + JSONObject.toJSONString(callback));
         AuthRequest authRequest = oAuthServiceImpl.getAuthRequest(source);
-        AuthResponse<AuthUser> response = authRequest.login(callback);
+        AuthResponse<AuthUser> response = (AuthResponse<AuthUser>) authRequest.login(callback);
         logger.info(JSONObject.toJSONString(response));
 
         if (response.ok()) {
@@ -75,9 +75,9 @@ public class OAuthController extends BaseController {
         if (null == user) {
             return error("用户不存在");
         }
-        AuthResponse<AuthToken> response = null;
         try {
-            response = authRequest.revoke(user.getToken());
+            @SuppressWarnings("unchecked")
+            AuthResponse<AuthToken> response = (AuthResponse<AuthToken>) authRequest.revoke(user.getToken());
             if (response.ok()) {
                 oAuthServiceImpl.remove(user.getUuid());
                 return success("用户 [" + user.getUsername() + "] 的 授权状态 已收回！");
@@ -97,9 +97,8 @@ public class OAuthController extends BaseController {
         if (null == user) {
             return error("用户不存在");
         }
-        AuthResponse<AuthToken> response = null;
         try {
-            response = authRequest.refresh(user.getToken());
+            AuthResponse<AuthToken> response = (AuthResponse<AuthToken>) authRequest.refresh(user.getToken());
             if (response.ok()) {
                 user.setToken(response.getData());
                 oAuthServiceImpl.save(user);
