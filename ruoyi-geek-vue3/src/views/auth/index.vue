@@ -187,11 +187,6 @@ const title = computed(() => import.meta.env.VITE_APP_TITLE || '后台管理系�
 .container {
   display: flex;
   width: 85%;
-
-  @media screen and (max-width: 768px) {
-    width: 95%;
-  }
-
   max-width: 1200px;
   min-height: 600px;
   height: 70vh;
@@ -204,6 +199,10 @@ const title = computed(() => import.meta.env.VITE_APP_TITLE || '后台管理系�
   opacity: 0;
   transform: translateY(30px);
   transition: all 1s ease;
+
+  @media screen and (max-width: 768px) {
+    width: 95%;
+  }
 
   &.appear-animation {
     opacity: 1;
