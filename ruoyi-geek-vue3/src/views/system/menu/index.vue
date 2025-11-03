@@ -382,11 +382,43 @@ function handleAdd(row) {
    getTreeselect();
    if (row != null && row.menuId) {
       form.value.parentId = row.menuId;
+      // 计算该父菜单下的最大排序值并设置新菜单排序
+      calculateMaxOrder(row.menuId);
    } else {
       form.value.parentId = 0;
+      // 计算根菜单的最大排序值并设置新菜单排序
+      calculateMaxOrder(0);
    }
    open.value = true;
    title.value = "添加菜单";
+}
+
+/** 计算指定父菜单下的最大排序值并设置新菜单排序 */
+function calculateMaxOrder(parentId) {
+   // 查找当前菜单列表中指定父菜单下的所有子菜单
+   let maxOrder = 0;
+   
+   // 递归查找函数
+   function findMaxOrder(menuList, targetParentId) {
+      for (const menu of menuList) {
+         if (menu.parentId === targetParentId) {
+            // 找到子菜单，比较排序值
+            if (menu.orderNum > maxOrder) {
+               maxOrder = menu.orderNum;
+            }
+         }
+         // 如果有子菜单，继续递归查找
+         if (menu.children && menu.children.length > 0) {
+            findMaxOrder(menu.children, targetParentId);
+         }
+      }
+   }
+   
+   // 从当前菜单列表中查找
+   findMaxOrder(menuList.value, parentId);
+   
+   // 设置新菜单的排序值为最大排序值+1
+   form.value.orderNum = maxOrder + 1;
 }
 /** 展开/折叠操作 */
 function toggleExpandAll() {

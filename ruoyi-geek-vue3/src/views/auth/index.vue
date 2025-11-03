@@ -102,7 +102,7 @@ const title = computed(() => import.meta.env.VITE_APP_TITLE || '后台管理系�
     </div>
     <!--  底部  -->
     <div class="el-auth-footer">
-      <span>Copyright © 2018-2024 若依Geek后台管理系统 All Rights Reserved.</span>
+      <span>Copyright © 2018-2024 后台管理系统 All Rights Reserved.</span>
     </div>
   </div>
 </template>
