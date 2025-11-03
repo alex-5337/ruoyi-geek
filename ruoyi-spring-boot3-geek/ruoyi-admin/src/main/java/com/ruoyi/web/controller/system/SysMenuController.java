@@ -100,6 +100,14 @@ public class SysMenuController extends BaseController
         {
             return error("新增菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
         }
+        else if (!menuService.checkPathUnique(menu))
+        {
+            return error("新增菜单'" + menu.getMenuName() + "'失败，路由地址已存在");
+        }
+        else if (!menuService.checkPermsUnique(menu))
+        {
+            return error("新增菜单'" + menu.getMenuName() + "'失败，权限标识已存在");
+        }
         else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath()))
         {
             return error("新增菜单'" + menu.getMenuName() + "'失败，地址必须以http(s)://开头");
@@ -120,6 +128,14 @@ public class SysMenuController extends BaseController
         if (!menuService.checkMenuNameUnique(menu))
         {
             return error("修改菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
+        }
+        else if (!menuService.checkPathUnique(menu))
+        {
+            return error("修改菜单'" + menu.getMenuName() + "'失败，路由地址已存在");
+        }
+        else if (!menuService.checkPermsUnique(menu))
+        {
+            return error("修改菜单'" + menu.getMenuName() + "'失败，权限标识已存在");
         }
         else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath()))
         {

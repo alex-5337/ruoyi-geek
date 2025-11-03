@@ -132,6 +132,16 @@
 		where menu_name=#{menuName} and parent_id = #{parentId} limit 1
 	</select>
 	
+	<select id="checkPathUnique" parameterType="String" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		where path=#{path} and menu_type in ('M', 'C') limit 1
+	</select>
+	
+	<select id="checkPermsUnique" parameterType="String" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		where perms=#{perms} and perms != '' limit 1
+	</select>
+	
 	<update id="updateMenu" parameterType="SysMenu">
 		update sys_menu
 		<set>
@@ -199,4 +209,4 @@
 	    delete from sys_menu where menu_id = #{menuId}
 	</delete>
 
-</mapper> 
+</mapper>

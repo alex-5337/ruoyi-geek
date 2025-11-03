@@ -122,4 +122,20 @@ public interface SysMenuMapper
      * @return 结果
      */
     public SysMenu checkMenuNameUnique(@Param("menuName") String menuName, @Param("parentId") Long parentId);
+    
+    /**
+     * 校验路由地址是否唯一
+     *
+     * @param path 路由地址
+     * @return 结果
+     */
+    public SysMenu checkPathUnique(@Param("path") String path);
+    
+    /**
+     * 校验权限标识是否唯一
+     *
+     * @param perms 权限标识
+     * @return 结果
+     */
+    public SysMenu checkPermsUnique(@Param("perms") String perms);
 }

@@ -74,16 +74,24 @@
 
 // el-message 样式调整
 .el-message {
-  background-color: var(--art-main-bg-color) !important;
+  background-color: #ffffff !important;
   border: 0 !important;
   box-shadow:
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+    0 6px 16px 0 rgba(0, 0, 0, 0.1),
+    0 9px 28px 8px rgba(0, 0, 0, 0.08) !important;
 
   p {
-    color: #515a6e !important;
-    font-size: 13px;
+    color: #303133 !important;
+    font-size: 14px;
+  }
+}
+
+// 错误消息样式增强
+.el-message--error {
+  background-color: #fef0f0 !important;
+  
+  p {
+    color: #f56c6c !important;
   }
 }
 

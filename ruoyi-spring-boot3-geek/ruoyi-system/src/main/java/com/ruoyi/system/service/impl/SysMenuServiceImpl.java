@@ -345,6 +345,48 @@ public class SysMenuServiceImpl implements ISysMenuService
         }
         return UserConstants.UNIQUE;
     }
+    
+    /**
+     * 校验路由地址是否唯一
+     * 
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    @Override
+    public boolean checkPathUnique(SysMenu menu)
+    {
+        // 只有非按钮类型的菜单才有路由地址
+        if (UserConstants.TYPE_BUTTON.equals(menu.getMenuType()))
+        {
+            return UserConstants.UNIQUE;
+        }
+        
+        Long menuId = StringUtils.isNull(menu.getMenuId()) ? -1L : menu.getMenuId();
+        SysMenu info = menuMapper.checkPathUnique(menu.getPath());
+        if (StringUtils.isNotNull(info) && info.getMenuId().longValue() != menuId.longValue())
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
+    }
+    
+    @Override
+    public boolean checkPermsUnique(SysMenu menu)
+    {
+        // 如果没有设置权限标识，则认为唯一
+        if (StringUtils.isEmpty(menu.getPerms()))
+        {
+            return UserConstants.UNIQUE;
+        }
+        
+        Long menuId = StringUtils.isNull(menu.getMenuId()) ? -1L : menu.getMenuId();
+        SysMenu info = menuMapper.checkPermsUnique(menu.getPerms());
+        if (StringUtils.isNotNull(info) && info.getMenuId().longValue() != menuId.longValue())
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
+    }
 
     /**
      * 获取路由名称
