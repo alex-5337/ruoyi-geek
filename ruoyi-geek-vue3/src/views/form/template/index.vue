@@ -69,6 +69,13 @@
         <el-form-item label="表单版本" prop="formVersion">
           <el-input v-model="form.formVersion" placeholder="请输入表单版本" />
         </el-form-item>
+        <el-form-item label="发布状态" prop="formStatus">
+          <el-select v-model="form.formStatus" placeholder="请选择发布状态">
+            <el-option label="草稿" value="0" />
+            <el-option label="已发布" value="1" />
+            <el-option label="已停用" value="2" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" />
         </el-form-item>
@@ -164,7 +171,7 @@ function reset() {
     formName: null,
     formSchema: null,
     formVersion: null,
-    formStatus: null,
+    formStatus: "0", // 设置默认状态为草稿(0)，确保表单可被查询到
     remark: null,
     createBy: null,
     createTime: null,

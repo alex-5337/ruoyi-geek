@@ -87,6 +87,10 @@ public class FormDataController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody FormData formData)
     {
+        // 验证表单ID是否为空
+        if (formData.getFormId() == null) {
+            return AjaxResult.error("请先添加表单");
+        }
         formData.setCreateBy(getUsername());
         return toAjax(formDataService.insertFormData(formData));
     }
