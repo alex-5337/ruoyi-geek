@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.sql.CommonDataSource;
 
+import org.springframework.lang.NonNull;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  */
 public class DynamicDataSource extends AbstractRoutingDataSource
 {
-    public DynamicDataSource(CommonDataSource defaultTargetDataSource, Map<Object, Object> targetDataSources)
+    public DynamicDataSource(@NonNull CommonDataSource defaultTargetDataSource, @NonNull Map<Object, Object> targetDataSources)
     {
         super.setDefaultTargetDataSource(defaultTargetDataSource);
         super.setTargetDataSources(targetDataSources);

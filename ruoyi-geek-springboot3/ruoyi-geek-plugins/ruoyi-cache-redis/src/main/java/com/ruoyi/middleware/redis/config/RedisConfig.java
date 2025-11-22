@@ -1,6 +1,7 @@
 package com.ruoyi.middleware.redis.config;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
@@ -29,20 +30,20 @@ public class RedisConfig implements CachingConfigurer {
     @Primary
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration config = instanceConfig(3600 * 24 * 15L);
-        return RedisCacheManager.builder(connectionFactory).cacheDefaults(config).transactionAware().build();
+        return RedisCacheManager.builder(Objects.requireNonNull(connectionFactory)).cacheDefaults(Objects.requireNonNull(config)).transactionAware().build();
     }
 
     @Bean
     public CacheManager cacheManager30m(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration config = instanceConfig(1800L);
-        return RedisCacheManager.builder(connectionFactory).cacheDefaults(config).transactionAware().build();
+        return RedisCacheManager.builder(Objects.requireNonNull(connectionFactory)).cacheDefaults(Objects.requireNonNull(config)).transactionAware().build();
     }
 
     @SuppressWarnings(value = { "unchecked", "rawtypes" })
     private RedisCacheConfiguration instanceConfig(Long ttl) {
         FastJson2JsonRedisSerializer serializer = new FastJson2JsonRedisSerializer(Object.class);
-        return RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(ttl)).disableCachingNullValues()
-                .computePrefixWith(name -> name + ":")
+        return RedisCacheConfiguration.defaultCacheConfig().entryTtl(Objects.requireNonNull(Duration.ofSeconds(ttl))).disableCachingNullValues()
+                .computePrefixWith(name -> Objects.requireNonNull(name) + ":")
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
@@ -53,7 +54,7 @@ public class RedisConfig implements CachingConfigurer {
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
 
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+        template.setConnectionFactory(Objects.requireNonNull(connectionFactory));
 
         FastJson2JsonRedisSerializer serializer = new FastJson2JsonRedisSerializer(Object.class);
 
@@ -72,7 +73,7 @@ public class RedisConfig implements CachingConfigurer {
     @Bean
     public DefaultRedisScript<Long> limitScript() {
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
-        redisScript.setScriptText(limitScriptText());
+        redisScript.setScriptText(Objects.requireNonNull(limitScriptText()));
         redisScript.setResultType(Long.class);
         return redisScript;
     }

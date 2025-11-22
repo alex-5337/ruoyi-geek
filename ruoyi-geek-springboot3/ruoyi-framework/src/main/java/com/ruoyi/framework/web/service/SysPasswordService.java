@@ -19,6 +19,7 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -63,7 +64,7 @@ public class SysPasswordService
 
         String ip = IpUtils.getIpAddr();
         validateIp(ip);
-        Integer retryCount = getCache().get(username, Integer.class);
+        Integer retryCount = getCache().get(Objects.requireNonNull(username), Integer.class);
         if (retryCount == null)
         {
             retryCount = 0;
@@ -90,7 +91,7 @@ public class SysPasswordService
 
     public void validateIp(String ip)
     {
-        Integer ipRetryCount = getIpCache().get(ip, Integer.class);
+        Integer ipRetryCount = getIpCache().get(Objects.requireNonNull(ip), Integer.class);
         if (ipRetryCount == null)
         {
             ipRetryCount = 0;
@@ -104,7 +105,7 @@ public class SysPasswordService
 
     public void incrementIpFailCount(String ip)
     {
-        Integer ipRetryCount = getIpCache().get(ip, Integer.class);
+        Integer ipRetryCount = getIpCache().get(Objects.requireNonNull(ip), Integer.class);
         if (ipRetryCount == null)
         {
             ipRetryCount = 0;
@@ -120,6 +121,6 @@ public class SysPasswordService
 
     public void clearLoginRecordCache(String loginName)
     {
-        getCache().evictIfPresent(loginName);
+        getCache().evictIfPresent(Objects.requireNonNull(loginName));
     }
 }

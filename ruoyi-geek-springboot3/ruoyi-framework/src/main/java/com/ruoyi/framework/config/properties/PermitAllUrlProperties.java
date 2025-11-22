@@ -15,9 +15,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.utils.spring.SpringUtils;
@@ -54,18 +56,32 @@ public class PermitAllUrlProperties implements InitializingBean, ApplicationCont
                             new SimpleImmutableEntry<>(entry.getKey(), controller)).stream();
                 })
                 .filter(pair -> pair.getValue() != null)
-                .map(pair -> switch (matching) {
-                    case "ant_path_matcher" -> pair.getKey().getPatternsCondition().getPatterns();
-                    case "path_pattern_parser" -> pair.getKey().getPathPatternsCondition().getPatternValues();
-                    default -> pair.getKey().getPatternsCondition().getPatterns();
+                .map(pair -> {
+                    RequestMappingInfo info = pair.getKey();
+                    Set<String> patterns = null;
+                    
+                    if ("ant_path_matcher".equals(matching) || "default".equals(matching)) {
+                        PatternsRequestCondition condition = info.getPatternsCondition();
+                        if (condition != null) {
+                            patterns = condition.getPatterns();
+                        }
+                    } else if ("path_pattern_parser".equals(matching)) {
+                        var condition = info.getPathPatternsCondition();
+                        if (condition != null) {
+                            patterns = condition.getPatternValues();
+                        }
+                    }
+                    
+                    return patterns;
                 })
-                .flatMap(patterns -> Objects.requireNonNull(patterns).stream())
+                .filter(Objects::nonNull)
+                .flatMap(Set::stream)
                 .map(url -> RegExUtils.replaceAll(url, PATTERN, ASTERISK))
                 .forEach(urls::add);
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext context) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
         this.applicationContext = context;
     }
 

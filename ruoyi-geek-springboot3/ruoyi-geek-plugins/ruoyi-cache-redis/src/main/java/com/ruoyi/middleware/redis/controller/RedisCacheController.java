@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class RedisCacheController {
         result.put("dbSize", dbSize);
 
         List<Map<String, String>> pieList = new ArrayList<>();
-        commandStats.stringPropertyNames().forEach(key -> {
+        Objects.requireNonNull(commandStats).stringPropertyNames().forEach(key -> {
             Map<String, String> data = new HashMap<>(2);
             String property = commandStats.getProperty(key);
             data.put("name", StringUtils.removeStart(key, "cmdstat_"));
@@ -73,3 +74,5 @@ public class RedisCacheController {
     
 
 }
+
+

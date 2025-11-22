@@ -2,6 +2,7 @@ package com.ruoyi.atomikos.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +48,7 @@ public class AtomikosConfig {
     public PlatformTransactionManager transactionManager() throws Throwable {
         UserTransaction userTransaction = userTransaction();
         TransactionManager atomikosTransactionManager = atomikosTransactionManager();
-        return new JtaTransactionManager(userTransaction, atomikosTransactionManager);
+        return new JtaTransactionManager(Objects.requireNonNull(userTransaction), Objects.requireNonNull(atomikosTransactionManager));
     }
 
     private List<AtomikosDataSourceBean> atomikosDataSourceBeans = new ArrayList<>();

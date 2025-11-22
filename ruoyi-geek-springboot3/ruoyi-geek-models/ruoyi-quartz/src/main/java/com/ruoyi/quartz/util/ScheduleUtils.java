@@ -1,5 +1,6 @@
 package com.ruoyi.quartz.util;
 
+import java.util.Objects;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -122,9 +123,11 @@ public class ScheduleUtils {
         if (count > 1) {
             return StringUtils.startsWithAny(invokeTarget, Constants.JOB_WHITELIST_STR);
         }
-        Object obj = SpringUtils.getBean(StringUtils.split(invokeTarget, ".")[0]);
+        Object obj = SpringUtils.getBean(Objects.requireNonNull(StringUtils.split(invokeTarget, ".")[0]));
         String beanPackageName = obj.getClass().getPackage().getName();
         return StringUtils.startsWithAny(beanPackageName, Constants.JOB_WHITELIST_STR)
                 && !StringUtils.startsWithAny(beanPackageName, Constants.JOB_ERROR_STR);
     }
 }
+
+

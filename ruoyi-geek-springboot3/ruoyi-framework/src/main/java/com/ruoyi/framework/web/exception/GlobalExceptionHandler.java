@@ -83,8 +83,10 @@ public class GlobalExceptionHandler {
             value = EscapeUtil.clean(value);
         }
         log.error("请求参数类型不匹配'{}',发生系统异常.", requestURI, e);
+        Class<?> requiredType = e.getRequiredType();
+        String typeName = requiredType != null ? requiredType.getName() : "未知类型";
         return AjaxResult.error(String.format("请求参数类型不匹配，参数[%s]要求类型为：'%s'，但输入值为：'%s'", e.getName(),
-                e.getRequiredType().getName(), value));
+                typeName, value));
     }
 
     /**
@@ -123,7 +125,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
-        String message = e.getBindingResult().getFieldError().getDefaultMessage();
+        var fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError != null ? fieldError.getDefaultMessage() : "参数验证失败";
         return AjaxResult.error(message);
     }
 
@@ -135,3 +138,5 @@ public class GlobalExceptionHandler {
         return AjaxResult.error("演示模式，不允许操作");
     }
 }
+
+

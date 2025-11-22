@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.quartz.domain.SysJob;
@@ -23,7 +24,7 @@ public class JobInvokeUtil
     public static void invokeMethod(SysJob sysJob) throws Exception
     {
         String invokeTarget = sysJob.getInvokeTarget();
-        String beanName = getBeanName(invokeTarget);
+        String beanName = Objects.requireNonNull(getBeanName(invokeTarget));
         String methodName = getMethodName(invokeTarget);
         List<Object[]> methodParams = getMethodParams(invokeTarget);
 

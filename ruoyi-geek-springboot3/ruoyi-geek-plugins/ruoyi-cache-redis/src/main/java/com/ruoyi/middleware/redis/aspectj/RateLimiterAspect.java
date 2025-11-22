@@ -3,6 +3,7 @@ package com.ruoyi.middleware.redis.aspectj;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -59,7 +60,7 @@ public class RateLimiterAspect
         List<Object> keys = Collections.singletonList(combineKey);
         try
         {
-            Long number = redisTemplate.execute(limitScript, keys, count, time);
+            Long number = redisTemplate.execute(Objects.requireNonNull(limitScript), Objects.requireNonNull(keys), count, time);
             if (StringUtils.isNull(number) || number.intValue() > count)
             {
                 throw new ServiceException("访问过于频繁，请稍候再试");

@@ -1,5 +1,6 @@
 package com.ruoyi.framework.web.service;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class PermissionService implements IPermissionService {
         if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }
-        PermissionContextHolder.setContext(permission);
+        PermissionContextHolder.setContext(Objects.requireNonNull(permission));
         return hasPermissions(loginUser.getPermissions(), permission);
     }
 
@@ -62,7 +63,7 @@ public class PermissionService implements IPermissionService {
         if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }
-        PermissionContextHolder.setContext(permissions);
+        PermissionContextHolder.setContext(Objects.requireNonNull(permissions));
         Set<String> authorities = loginUser.getPermissions();
         for (String permission : permissions.split(PERMISSION_DELIMETER)) {
             if (permission != null && hasPermissions(authorities, permission)) {
@@ -88,7 +89,7 @@ public class PermissionService implements IPermissionService {
         }
         for (SysRole sysRole : loginUser.getUser().getRoles()) {
             String roleKey = sysRole.getRoleKey();
-            if (SUPER_ADMIN.equals(roleKey) || roleKey.equals(StringUtils.trim(role))) {
+            if (SUPER_ADMIN.equals(roleKey) || roleKey.equals(Objects.requireNonNull(StringUtils.trim(role)))) {
                 return true;
             }
         }
@@ -125,6 +126,6 @@ public class PermissionService implements IPermissionService {
      * @return 用户是否具备某权限
      */
     private boolean hasPermissions(Set<String> permissions, String permission) {
-        return permissions.contains(ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));
+        return permissions.contains(ALL_PERMISSION) || permissions.contains(Objects.requireNonNull(StringUtils.trim(permission)));
     }
 }

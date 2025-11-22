@@ -1,5 +1,6 @@
 package com.ruoyi.middleware.redis.controller;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 
@@ -14,6 +15,7 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.ruoyi.middleware.redis.annotation.RedisListener;
@@ -38,15 +40,15 @@ public class RedisPubSubConfig implements ApplicationListener<ContextRefreshedEv
             RedisConnectionFactory connectionFactory,
             Executor redisListenerExecutor) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setTaskExecutor(redisListenerExecutor);
+        container.setConnectionFactory(Objects.requireNonNull(connectionFactory));
+        container.setTaskExecutor(Objects.requireNonNull(redisListenerExecutor));
         return container;
     }
 
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        ApplicationContext context = event.getApplicationContext();
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
+        ApplicationContext context = Objects.requireNonNull(event.getApplicationContext());
 
         if (context.getParent() != null) {
             return;
@@ -56,15 +58,15 @@ public class RedisPubSubConfig implements ApplicationListener<ContextRefreshedEv
         RedisMessageListenerContainer container = context.getBean(RedisMessageListenerContainer.class);
 
         for (String beanName : beanNames) {
-            Object bean = context.getBean(beanName);
+            Object bean = context.getBean(Objects.requireNonNull(beanName));
 
             if (!(bean instanceof MessageListener listener)) {
                 throw new IllegalStateException(
-                        "@RedisListener The annotated class must implement the MessageListener interface. Bean Name: " + beanName);
+                        "@RedisListener The annotated class must implement the MessageListener interface. Bean Name: " + Objects.requireNonNull(beanName));
             }
 
             RedisListener annotation = bean.getClass().getAnnotation(RedisListener.class);
-            String channelPattern = annotation.value();
+            String channelPattern = Objects.requireNonNull(annotation.value());
 
             container.addMessageListener(listener, new PatternTopic(channelPattern));
             log.info("Registered Redis message listener [" + beanName + "] listening channel: " + channelPattern);

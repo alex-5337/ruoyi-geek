@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,7 +60,9 @@ public class DataSourceManager implements InitializingBean {
         for (Map.Entry<String, DataSource> entry : targetDataSources.entrySet()) {
             objectMap.put(entry.getKey(), entry.getValue());
         }
-        return new DynamicDataSource(targetDataSources.get(dataSourceProperties.getPrimaryStorageBucket()), objectMap);
+        return new DynamicDataSource(
+            Objects.requireNonNull(targetDataSources.get(dataSourceProperties.getPrimaryStorageBucket())), 
+            objectMap);
     }
 
     // 仅启动期调用：基于 JDBC 元数据判定 mybatis databaseId（含 openGauss 区分），与 MyBatis 机制兼容
@@ -228,3 +231,4 @@ public class DataSourceManager implements InitializingBean {
     }
 
 }
+

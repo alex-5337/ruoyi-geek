@@ -1,5 +1,6 @@
 package com.ruoyi.framework.config;
 
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.mybatis.spring.annotation.MapperScan;
@@ -26,6 +27,6 @@ public class ApplicationConfig
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jacksonObjectMapperCustomization()
     {
-        return jacksonObjectMapperBuilder -> jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
+        return jacksonObjectMapperBuilder -> jacksonObjectMapperBuilder.timeZone(Objects.requireNonNull(TimeZone.getDefault()));
     }
 }

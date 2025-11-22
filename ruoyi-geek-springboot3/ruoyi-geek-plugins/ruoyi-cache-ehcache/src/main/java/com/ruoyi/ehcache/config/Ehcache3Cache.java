@@ -2,6 +2,7 @@ package com.ruoyi.ehcache.config;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.ehcache.core.EhcacheBase;
@@ -55,8 +56,8 @@ public class Ehcache3Cache implements CacheNoTimeOut, CacheKeys {
 
     @Override
     public <T> void setCacheObject(String cacheName, String key, T value) {
-        Cache cache = jCacheCacheManager.getCache(cacheName);
-        cache.put(cacheName, value);
+        Cache cache = jCacheCacheManager.getCache(Objects.requireNonNull(cacheName));
+        Objects.requireNonNull(cache).put(Objects.requireNonNull(key), value);
     }
 
 }

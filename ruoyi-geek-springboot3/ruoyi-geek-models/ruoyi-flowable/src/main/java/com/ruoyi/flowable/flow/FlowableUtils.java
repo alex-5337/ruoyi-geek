@@ -598,7 +598,7 @@ public class FlowableUtils {
                 for (int i = 0; i < dirtyDataLineList.size(); i++) {
                     // 如果发现他的上个节点在脏线路内，说明这个点可能是并行的节点，或者连续驳回
                     // 这时，都以之前的脏线路节点为标准，只需合并脏线路即可，也就是路线补全
-                    if (dirtyDataLineList.get(i).contains(userTaskKey.toString())) {
+                    if (userTaskKey != null && dirtyDataLineList.get(i).contains(userTaskKey.toString())) {
                         isNewDirtyData = false;
                         dirtyDataLineList.get(i).addAll(dirtyDataLine);
                     }

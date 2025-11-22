@@ -1,5 +1,8 @@
 package com.ruoyi.framework.security.context;
 
+import java.util.Objects;
+
+import org.springframework.lang.NonNull;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import com.ruoyi.common.core.text.Convert;
@@ -11,9 +14,9 @@ import com.ruoyi.common.core.text.Convert;
  */
 public class PermissionContextHolder
 {
-    private static final String PERMISSION_CONTEXT_ATTRIBUTES = "PERMISSION_CONTEXT";
+    private static final @NonNull String PERMISSION_CONTEXT_ATTRIBUTES = "PERMISSION_CONTEXT";
 
-    public static void setContext(String permission)
+    public static void setContext(@NonNull String permission)
     {
         RequestContextHolder.currentRequestAttributes().setAttribute(PERMISSION_CONTEXT_ATTRIBUTES, permission,
                 RequestAttributes.SCOPE_REQUEST);
@@ -21,7 +24,7 @@ public class PermissionContextHolder
 
     public static String getContext()
     {
-        return Convert.toStr(RequestContextHolder.currentRequestAttributes().getAttribute(PERMISSION_CONTEXT_ATTRIBUTES,
-                RequestAttributes.SCOPE_REQUEST));
+        return Objects.requireNonNull(Convert.toStr(RequestContextHolder.currentRequestAttributes().getAttribute(PERMISSION_CONTEXT_ATTRIBUTES,
+                RequestAttributes.SCOPE_REQUEST)));
     }
 }
