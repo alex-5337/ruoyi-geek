@@ -1,5 +1,7 @@
 package com.ruoyi.mybatisplus.config;
 
+import java.util.Objects;
+
 import javax.sql.DataSource;
 
 import org.apache.ibatis.io.VFS;
@@ -97,7 +99,7 @@ public class MybatisPlusConfig {
                 sessionFactory.setTypeAliasesPackage(typeAliasesPackage);
                 sessionFactory.setMapperLocations(
                         MybatisUtils.resolveMapperLocations(StringUtils.split(mapperLocations, ",")));
-                sessionFactory.setConfigLocation(new DefaultResourceLoader().getResource(configLocation));
+                sessionFactory.setConfigLocation(new DefaultResourceLoader().getResource(Objects.requireNonNull(configLocation)));
                 PageInterceptor interceptor = new PageInterceptor();
                 interceptor.setProperties(packageHelperStandardProperties.getProperties());
                 sessionFactory.addPlugins(interceptor,new DataScopeInterceptor());

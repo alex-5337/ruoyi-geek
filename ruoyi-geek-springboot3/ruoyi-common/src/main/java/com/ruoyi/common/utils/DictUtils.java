@@ -27,7 +27,12 @@ public class DictUtils
      */
     public static void setDictCache(String key, List<SysDictData> dictDatas)
     {
-        getDictCacheKey().put(key, dictDatas);
+        Cache cache = getDictCacheKey();
+        if (cache != null)
+        {
+            // 使用Objects.requireNonNull确保参数不为null，满足@NonNull要求
+            cache.put(java.util.Objects.requireNonNull(key), dictDatas);
+        }       
     }
 
     /**
@@ -39,7 +44,17 @@ public class DictUtils
     @SuppressWarnings("unchecked")
     public static List<SysDictData> getDictCache(String key)
     {
-        List<SysDictData> arrayCache = (List<SysDictData>) getDictCacheKey().get(key, List.class);
+        if (StringUtils.isEmpty(key))
+        {
+            return null;
+        }
+        Cache cache = getDictCacheKey();
+        if (cache == null)
+        {
+            return null;
+        }
+        // 使用Objects.requireNonNull确保参数不为null，满足@NonNull要求
+        List<SysDictData> arrayCache = (List<SysDictData>) cache.get(java.util.Objects.requireNonNull(key), List.class);
         if (StringUtils.isNotNull(arrayCache))
         {
             return arrayCache;
@@ -81,6 +96,11 @@ public class DictUtils
      */
     public static String getDictLabel(String dictType, String dictValue, String separator)
     {
+        if (dictType == null || dictValue == null || separator == null)
+        {
+            return StringUtils.EMPTY;
+        }
+        
         StringBuilder propertyString = new StringBuilder();
         List<SysDictData> datas = getDictCache(dictType);
         if (StringUtils.isNotNull(datas))
@@ -91,7 +111,7 @@ public class DictUtils
                 {
                     for (String value : dictValue.split(separator))
                     {
-                        if (value.equals(dict.getDictValue()))
+                        if (value != null && value.equals(dict.getDictValue()))
                         {
                             propertyString.append(dict.getDictLabel()).append(separator);
                             break;
@@ -123,6 +143,11 @@ public class DictUtils
      */
     public static String getDictValue(String dictType, String dictLabel, String separator)
     {
+        if (dictType == null || dictLabel == null || separator == null)
+        {
+            return StringUtils.EMPTY;
+        }
+        
         StringBuilder propertyString = new StringBuilder();
         List<SysDictData> datas = getDictCache(dictType);
         if (StringUtils.containsAny(separator, dictLabel) && StringUtils.isNotEmpty(datas))
@@ -131,7 +156,7 @@ public class DictUtils
             {
                 for (String label : dictLabel.split(separator))
                 {
-                    if (label.equals(dict.getDictLabel()))
+                    if (label != null && label.equals(dict.getDictLabel()))
                     {
                         propertyString.append(dict.getDictValue()).append(separator);
                         break;
@@ -181,7 +206,12 @@ public class DictUtils
      */
     public static void removeDictCache(String key)
     {
-        getDictCacheKey().evict(key);
+        Cache cache = getDictCacheKey();
+        if (cache != null)
+        {
+            // 使用Objects.requireNonNull确保参数不为null，满足@NonNull要求
+            cache.evict(java.util.Objects.requireNonNull(key));
+        }
     }
 
     /**
@@ -189,7 +219,11 @@ public class DictUtils
      */
     public static void clearDictCache()
     {
-        getDictCacheKey().clear();
+        Cache cache = getDictCacheKey();
+        if (cache != null)
+        {
+            cache.clear();
+        }
     }
 
     /**
@@ -199,6 +233,12 @@ public class DictUtils
      */
     public static Cache getDictCacheKey()
     {
-        return CacheUtils.getCache(CacheConstants.SYS_DICT_KEY);
+        try {
+            return CacheUtils.getCache(CacheConstants.SYS_DICT_KEY);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
+
+

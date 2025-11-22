@@ -2,6 +2,7 @@ package com.ruoyi.mybatisinterceptor.aspectj;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.aspectj.lang.JoinPoint;
@@ -141,7 +142,8 @@ public class DataScopeAspect {
                 PlainSelect subPlainSelect = new PlainSelect();
                 subPlainSelect.setSelectItems(List.of(new SelectItem<>(new Column("dept_id"))));
                 subPlainSelect.setFromItem(new Table("sys_role_dept"));
-                List<Expression> roleIdExpressions = scopeCustomIds.stream().map(Long::valueOf).map(LongValue::new)
+                List<Expression> roleIdExpressions = Objects.requireNonNull(scopeCustomIds).stream()
+                        .map(Long::valueOf).map(id -> new LongValue(Objects.requireNonNull(id)))
                         .collect(Collectors.toList());
                 subPlainSelect.setWhere(
                         new InExpression(new Column("role_id"), new ParenthesedExpressionList<>(roleIdExpressions)));
@@ -206,3 +208,4 @@ public class DataScopeAspect {
     }
 
 }
+

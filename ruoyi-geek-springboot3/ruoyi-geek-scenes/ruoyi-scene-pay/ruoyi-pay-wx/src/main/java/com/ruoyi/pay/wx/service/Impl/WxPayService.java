@@ -1,9 +1,12 @@
 package com.ruoyi.pay.wx.service.Impl;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -47,6 +50,10 @@ public class WxPayService implements IWxPayService {
 
     @Autowired
     private RefundService refundService;
+    
+    // 定义一个非空的Charset常量
+    @NonNull
+    private static final Charset UTF8_CHARSET = Objects.requireNonNull(StandardCharsets.UTF_8);
 
     @Override
     public String payUrl(PayOrder payOrder) {
@@ -75,7 +82,7 @@ public class WxPayService implements IWxPayService {
         String certSn = request.getHeader("Wechatpay-Serial");
         if (type.equals("pay")) {
             try {
-                String requestBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+                String requestBody = StreamUtils.copyToString(request.getInputStream(), (Charset) UTF8_CHARSET);
                 RequestParam requestParam = new RequestParam.Builder()
                         .serialNumber(certSn)
                         .nonce(nonce)
@@ -106,7 +113,7 @@ public class WxPayService implements IWxPayService {
             }
         } else if (type.equals("refund")) {
             try {
-                String requestBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+                String requestBody = StreamUtils.copyToString(request.getInputStream(), (Charset) UTF8_CHARSET);
                 RequestParam requestParam = new RequestParam.Builder()
                         .serialNumber(certSn)
                         .nonce(nonce)
@@ -192,3 +199,16 @@ public class WxPayService implements IWxPayService {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

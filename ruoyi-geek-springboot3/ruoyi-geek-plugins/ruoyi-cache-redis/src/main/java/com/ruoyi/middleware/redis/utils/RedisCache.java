@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @param value 缓存的值
      */
     public <T> void setCacheObject(final String cacheName, final String key, final T value) {
-        redisTemplate.opsForValue().set(cacheName + ":" + key, value);
+        redisTemplate.opsForValue().set(Objects.requireNonNull(cacheName) + ":" + Objects.requireNonNull(key), Objects.requireNonNull(value));
     }
 
     /**
@@ -50,7 +51,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @param value 缓存的值
      */
     public <T> void setCacheObject(final String key, final T value) {
-        redisTemplate.opsForValue().set(key, value);
+        redisTemplate.opsForValue().set(Objects.requireNonNull(key), Objects.requireNonNull(value));
     }
 
     /**
@@ -63,7 +64,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      */
     public <T> void setCacheObject(final String cacheName, final String key, final T value, final long timeout,
             final TimeUnit timeUnit) {
-        redisTemplate.opsForValue().set(cacheName + ":" + key, value, timeout, timeUnit);
+        redisTemplate.opsForValue().set(Objects.requireNonNull(cacheName) + ":" + Objects.requireNonNull(key), Objects.requireNonNull(value), timeout, Objects.requireNonNull(timeUnit));
     }
 
     /**
@@ -75,7 +76,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @param timeUnit 时间颗粒度
      */
     public <T> void setCacheObject(final String key, final T value, final long timeout, final TimeUnit timeUnit) {
-        redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
+        redisTemplate.opsForValue().set(Objects.requireNonNull(key), Objects.requireNonNull(value), timeout, Objects.requireNonNull(timeUnit));
     }
 
     /**
@@ -86,7 +87,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return true=设置成功；false=设置失败
      */
     public boolean expire(final String key, final long timeout) {
-        return expire(key, timeout, TimeUnit.SECONDS);
+        return expire(Objects.requireNonNull(key), timeout, TimeUnit.SECONDS);
     }
 
     /**
@@ -98,7 +99,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return true=设置成功；false=设置失败
      */
     public boolean expire(final String key, final long timeout, final TimeUnit unit) {
-        return redisTemplate.expire(key, timeout, unit);
+        return redisTemplate.expire(Objects.requireNonNull(key), timeout, Objects.requireNonNull(unit));
     }
 
     /**
@@ -108,7 +109,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return 有效时间
      */
     public long getExpire(final String key) {
-        return redisTemplate.getExpire(key);
+        return redisTemplate.getExpire(Objects.requireNonNull(key));
     }
 
     /**
@@ -118,7 +119,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return true 存在 false不存在
      */
     public Boolean hasKey(String key) {
-        return redisTemplate.hasKey(key);
+        return redisTemplate.hasKey(Objects.requireNonNull(key));
     }
 
     /**
@@ -129,7 +130,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      */
     public <T> T getCacheObject(final String key) {
         ValueOperations<String, T> operation = redisTemplate.opsForValue();
-        return operation.get(key);
+        return operation.get(Objects.requireNonNull(key));
     }
 
     /**
@@ -138,7 +139,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @param key
      */
     public boolean deleteObject(final String key) {
-        return redisTemplate.delete(key);
+        return redisTemplate.delete(Objects.requireNonNull(key));
     }
 
     /**
@@ -148,7 +149,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return
      */
     public boolean deleteObject(final Collection collection) {
-        return redisTemplate.delete(collection) > 0;
+        return redisTemplate.delete(Objects.requireNonNull(collection)) > 0;
     }
 
     /**
@@ -159,7 +160,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return 缓存的对象
      */
     public <T> long setCacheList(final String key, final List<T> dataList) {
-        Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
+        Long count = redisTemplate.opsForList().rightPushAll(Objects.requireNonNull(key), Objects.requireNonNull(dataList));
         return count == null ? 0 : count;
     }
 
@@ -170,19 +171,19 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return 缓存键值对应的数据
      */
     public <T> List<T> getCacheList(final String key) {
-        return redisTemplate.opsForList().range(key, 0, -1);
+        return redisTemplate.opsForList().range(Objects.requireNonNull(key), 0, -1);
     }
 
     /**
      * 缓存Set
      *
-     * @param key     缓存键值
+     * @param key     缓存的键值
      * @param dataSet 缓存的数据
      * @return 缓存数据的对象
      */
     public <T> BoundSetOperations<String, T> setCacheSet(final String key, final Set<T> dataSet) {
-        BoundSetOperations<String, T> setOperation = redisTemplate.boundSetOps(key);
-        Iterator<T> it = dataSet.iterator();
+        BoundSetOperations<String, T> setOperation = redisTemplate.boundSetOps(Objects.requireNonNull(key));
+        Iterator<T> it = Objects.requireNonNull(dataSet).iterator();
         while (it.hasNext()) {
             setOperation.add(it.next());
         }
@@ -196,7 +197,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return
      */
     public <T> Set<T> getCacheSet(final String key) {
-        return redisTemplate.opsForSet().members(key);
+        return redisTemplate.opsForSet().members(Objects.requireNonNull(key));
     }
 
     /**
@@ -207,7 +208,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      */
     public <T> void setCacheMap(final String key, final Map<String, T> dataMap) {
         if (dataMap != null) {
-            redisTemplate.opsForHash().putAll(key, dataMap);
+            redisTemplate.opsForHash().putAll(Objects.requireNonNull(key), dataMap);
         }
     }
 
@@ -218,7 +219,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return
      */
     public <T> Map<String, T> getCacheMap(final String key) {
-        return redisTemplate.opsForHash().entries(key);
+        return redisTemplate.opsForHash().entries(Objects.requireNonNull(key));
     }
 
     /**
@@ -229,7 +230,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @param value 值
      */
     public <T> void setCacheMapValue(final String key, final String hKey, final T value) {
-        redisTemplate.opsForHash().put(key, hKey, value);
+        redisTemplate.opsForHash().put(Objects.requireNonNull(key), Objects.requireNonNull(hKey), Objects.requireNonNull(value));
     }
 
     /**
@@ -241,7 +242,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      */
     public <T> T getCacheMapValue(final String key, final String hKey) {
         HashOperations<String, String, T> opsForHash = redisTemplate.opsForHash();
-        return opsForHash.get(key, hKey);
+        return opsForHash.get(Objects.requireNonNull(key), Objects.requireNonNull(hKey));
     }
 
     /**
@@ -252,7 +253,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return Hash对象集合
      */
     public <T> List<T> getMultiCacheMapValue(final String key, final Collection<Object> hKeys) {
-        return redisTemplate.opsForHash().multiGet(key, hKeys);
+        return redisTemplate.opsForHash().multiGet(Objects.requireNonNull(key), Objects.requireNonNull(hKeys));
     }
 
     /**
@@ -263,7 +264,7 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return 是否成功
      */
     public boolean deleteCacheMapValue(final String key, final String hKey) {
-        return redisTemplate.opsForHash().delete(key, hKey) > 0;
+        return redisTemplate.opsForHash().delete(Objects.requireNonNull(key), Objects.requireNonNull(hKey)) > 0;
     }
 
     /**
@@ -273,15 +274,15 @@ public class RedisCache implements CacheKeys, CacheTimeOut {
      * @return 对象列表
      */
     public Collection<String> keys(final String pattern) {
-        return redisTemplate.keys(pattern);
+        return redisTemplate.keys(Objects.requireNonNull(pattern));
     }
 
     @Override
     public Set<String> getCachekeys(Cache cache) {
         Set<String> keyset = new HashSet<>();
-        Set<Object> keysets = redisTemplate.keys(cache.getName() + "*");
+        Set<Object> keysets = redisTemplate.keys(Objects.requireNonNull(cache).getName() + "*");
         for (Object s : keysets) {
-            keyset.add(StringUtils.replace(s.toString(), cache.getName() + ":", ""));
+            keyset.add(StringUtils.replace(s.toString(), Objects.requireNonNull(cache).getName() + ":", ""));
         }
         return keyset;
     }

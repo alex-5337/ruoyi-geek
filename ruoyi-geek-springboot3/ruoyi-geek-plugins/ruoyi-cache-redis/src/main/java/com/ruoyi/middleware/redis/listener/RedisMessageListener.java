@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.ruoyi.middleware.redis.annotation.RedisListener;
@@ -25,7 +27,7 @@ public class RedisMessageListener implements MessageListener {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Override
-    public void onMessage(Message message, byte[] pattern) {
+    public void onMessage(@NonNull Message message, @Nullable byte[] pattern) {
         System.out.println("收到消息：" + message.toString());
         String channel = new String(message.getChannel());
         String body = new String(message.getBody());

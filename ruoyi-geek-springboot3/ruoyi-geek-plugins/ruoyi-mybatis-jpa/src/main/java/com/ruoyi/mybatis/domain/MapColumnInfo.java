@@ -1,6 +1,7 @@
 package com.ruoyi.mybatis.domain;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -18,9 +19,9 @@ public class MapColumnInfo extends BaseColumnInfo {
 
     public MapColumnInfo(Field field) {
         this.field = field;
-        this.columnMap = AnnotationUtils.findAnnotation(this.field, ColumnMap.class);
+        this.columnMap = AnnotationUtils.findAnnotation(Objects.requireNonNull(this.field), ColumnMap.class);
         this.columnName = this.columnMap.name();
-        this.query = AnnotationUtils.findAnnotation(this.field, Query.class);
+        this.query = AnnotationUtils.findAnnotation(Objects.requireNonNull(this.field), Query.class);
         this.fieldName = this.field.getName();
         this.field.setAccessible(true);
         this.querySql = this.getQuerySql(this.query);

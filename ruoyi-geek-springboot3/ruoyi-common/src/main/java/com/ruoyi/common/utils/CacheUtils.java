@@ -22,7 +22,11 @@ public class CacheUtils {
      * @return
      */
     public static CacheManager getCacheManager() {
-        return SpringUtils.getBean(CacheManager.class);
+        CacheManager cacheManager = SpringUtils.getBean(CacheManager.class);
+        if (cacheManager == null) {
+            throw new IllegalStateException("CacheManager bean is not available");
+        }
+        return cacheManager;
     }
 
     /**
@@ -32,7 +36,14 @@ public class CacheUtils {
      * @return
      */
     public static Cache getCache(String cacheName) {
-        return getCacheManager().getCache(cacheName);
+        if (cacheName == null || cacheName.trim().isEmpty()) {
+            throw new IllegalArgumentException("cacheName cannot be null or empty");
+        }
+        Cache cache = getCacheManager().getCache(cacheName);
+        if (cache == null) {
+            throw new IllegalStateException("Cache with name '" + cacheName + "' is not available");
+        }
+        return cache;
     }
 
     /**
@@ -42,8 +53,14 @@ public class CacheUtils {
      * @return
      */
     public static Set<String> getkeys(String cacheName) {
+        if (cacheName == null || cacheName.trim().isEmpty()) {
+            throw new IllegalArgumentException("cacheName cannot be null or empty");
+        }
         Cache cache = getCache(cacheName);
         CacheKeys cacheGetKets = SpringUtils.getBean(CacheKeys.class);
+        if (cacheGetKets == null) {
+            throw new IllegalStateException("CacheKeys bean is not available");
+        }
         return cacheGetKets.getCachekeys(cache);
     }
 
@@ -68,12 +85,18 @@ public class CacheUtils {
      * @param <T>
      */
     public static <T> void putIfAbsent(String cacheName, String key, T value) {
+        if (cacheName == null || key == null) {
+            return;
+        }
         if (ObjectUtils.isEmpty(get(cacheName, key))) {
             put(cacheName, key, value, 0, null);
         }
     }
 
     public static boolean hasKey(String cacheName, String key) {
+        if (cacheName == null || key == null) {
+            return false;
+        }
         return !ObjectUtils.isEmpty(get(cacheName, key));
     }
 
@@ -88,12 +111,18 @@ public class CacheUtils {
      * @param <T>
      */
     public static <T> void put(String cacheName, String key, T value, long timeout, TimeUnit unit) {
+        if (cacheName == null || key == null) {
+            return;
+        }
         Cache cache = getCache(cacheName);
         if (cache instanceof JCacheCache) {
             JCacheCache ehcache = (JCacheCache) cache;
             ehcache.put(key, value);
         } else if (cache instanceof TransactionAwareCacheDecorator) {
             CacheTimeOut cacheTimeOut = SpringUtils.getBean(CacheTimeOut.class);
+            if (cacheTimeOut == null) {
+                throw new IllegalStateException("CacheTimeOut bean is not available");
+            }
             if (timeout != 0 && unit != null) {
                 cacheTimeOut.setCacheObject(cacheName, key, value, timeout, unit);
             } else {
@@ -112,6 +141,9 @@ public class CacheUtils {
      * @return
      */
     public static Cache.ValueWrapper get(String cacheName, String key) {
+        if (cacheName == null || key == null) {
+            return null;
+        }
         return getCache(cacheName).get(key);
     }
 
@@ -125,6 +157,9 @@ public class CacheUtils {
      * @return
      */
     public static <T> T get(String cacheName, String key, @Nullable Class<T> type) {
+        if (cacheName == null || key == null) {
+            return null;
+        }
         return getCache(cacheName).get(key, type);
     }
 
@@ -135,6 +170,9 @@ public class CacheUtils {
      * @param key
      */
     public static void remove(String cacheName, String key) {
+        if (cacheName == null || key == null) {
+            return;
+        }
         getCache(cacheName).evict(key);
     }
 
@@ -146,6 +184,9 @@ public class CacheUtils {
      * @return
      */
     public static boolean removeIfPresent(String cacheName, String key) {
+        if (cacheName == null || key == null) {
+            return false;
+        }
         remove(cacheName, key);
         return false;
     }
@@ -156,6 +197,9 @@ public class CacheUtils {
      * @param cacheName
      */
     public static void clear(String cacheName) {
+        if (cacheName == null || cacheName.trim().isEmpty()) {
+            return;
+        }
         getCache(cacheName).clear();
     }
 }

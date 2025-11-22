@@ -7,6 +7,8 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.utils.StringUtils;
 
@@ -19,48 +21,69 @@ import com.ruoyi.common.utils.StringUtils;
 public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationContextAware 
 {
     /** Spring应用上下文环境 */
-    private static ConfigurableListableBeanFactory beanFactory;
+    private static volatile ConfigurableListableBeanFactory beanFactory;
 
-    private static ApplicationContext applicationContext;
+    private static volatile ApplicationContext applicationContext;
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException 
+    public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException 
     {
+        Assert.notNull(beanFactory, "ConfigurableListableBeanFactory must not be null");
         SpringUtils.beanFactory = beanFactory;
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException 
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException 
     {
+        Assert.notNull(applicationContext, "ApplicationContext must not be null");
         SpringUtils.applicationContext = applicationContext;
     }
 
     /**
      * 获取对象
      *
-     * @param name
-     * @return Object 一个以所给名字注册的bean的实例
+     * @param name  bean名称
+     * @return 一个以所给名字注册的bean的实例
      * @throws org.springframework.beans.BeansException
-     *
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T getBean(String name) throws BeansException
+    public static <T> T getBean(@NonNull String name) throws BeansException
     {
-        return (T) beanFactory.getBean(name);
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
+        // 获取bean实例
+        Object bean = beanFactory.getBean(name);
+        // 这种方法在运行时仍有类型安全风险，但通过适当的文档说明用法
+        @SuppressWarnings("unchecked")
+        T result = (T) bean;
+        return result;
+    }
+    
+    /**
+     * 获取指定名称和类型的Bean，提供更安全的类型检查
+     * 
+     * @param name bean名称
+     * @param requiredType 期望的Bean类型
+     * @return 指定类型的Bean实例
+     * @throws BeansException 如果获取失败或类型不匹配
+     */
+    public static <T> T getBean(@NonNull String name, @NonNull Class<T> requiredType) throws BeansException
+    {
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
+        // 使用Spring提供的类型安全的getBean方法，自动进行类型检查
+        return beanFactory.getBean(name, requiredType);
     }
 
     /**
      * 获取类型为requiredType的对象
      *
-     * @param clz
-     * @return
+     * @param clz  bean类型
+     * @return 指定类型的bean实例
      * @throws org.springframework.beans.BeansException
-     *
      */
-    public static <T> T getBean(Class<T> clz) throws BeansException
+    public static <T> T getBean(@NonNull Class<T> clz) throws BeansException
     {
-        T result = (T) beanFactory.getBean(clz);
-        return result;
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
+        // 直接使用泛型方法，避免额外的类型转换
+        return beanFactory.getBean(clz);
     }
 
     /**
@@ -69,8 +92,9 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      * @param name
      * @return boolean
      */
-    public static boolean containsBean(String name)
+    public static boolean containsBean(@NonNull String name)
     {
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
         return beanFactory.containsBean(name);
     }
 
@@ -82,8 +106,9 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      * @throws org.springframework.beans.factory.NoSuchBeanDefinitionException
      *
      */
-    public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException
+    public static boolean isSingleton(@NonNull String name) throws NoSuchBeanDefinitionException
     {
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
         return beanFactory.isSingleton(name);
     }
 
@@ -93,8 +118,9 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      * @throws org.springframework.beans.factory.NoSuchBeanDefinitionException
      *
      */
-    public static Class<?> getType(String name) throws NoSuchBeanDefinitionException
+    public static Class<?> getType(@NonNull String name) throws NoSuchBeanDefinitionException
     {
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
         return beanFactory.getType(name);
     }
 
@@ -106,8 +132,9 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      * @throws org.springframework.beans.factory.NoSuchBeanDefinitionException
      *
      */
-    public static String[] getAliases(String name) throws NoSuchBeanDefinitionException
+    public static String[] getAliases(@NonNull String name) throws NoSuchBeanDefinitionException
     {
+        Assert.notNull(beanFactory, "BeanFactory is not initialized yet");
         return beanFactory.getAliases(name);
     }
 
@@ -118,9 +145,13 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getAopProxy(T invoker)
+    public static <T> T getAopProxy(@NonNull T invoker)
     {
-        return (T) AopContext.currentProxy();
+        try {
+            return (T) AopContext.currentProxy();
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Cannot find current proxy. Set 'exposeProxy' property on Advised to 'true' to make it available.", e);
+        }
     }
 
     /**
@@ -130,6 +161,7 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      */
     public static String[] getActiveProfiles()
     {
+        Assert.notNull(applicationContext, "ApplicationContext is not initialized yet");
         return applicationContext.getEnvironment().getActiveProfiles();
     }
 
@@ -151,8 +183,9 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      * @return 当前的配置文件的值
      *
      */
-    public static String getRequiredProperty(String key)
+    public static String getRequiredProperty(@NonNull String key)
     {
+        Assert.notNull(applicationContext, "ApplicationContext is not initialized yet");
         return applicationContext.getEnvironment().getRequiredProperty(key);
     }
 }

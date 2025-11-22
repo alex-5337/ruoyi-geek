@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -18,6 +19,11 @@ public class MybatisUtils {
     static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
 
     public static String setTypeAliasesPackage(String typeAliasesPackage) {
+        if (typeAliasesPackage == null || typeAliasesPackage.trim().isEmpty())
+        {
+            throw new IllegalArgumentException("typeAliasesPackage参数不能为空");
+        }
+        
         ResourcePatternResolver resolver = (ResourcePatternResolver) new PathMatchingResourcePatternResolver();
         MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resolver);
         List<String> allResult = new ArrayList<String>();
@@ -25,7 +31,7 @@ public class MybatisUtils {
             for (String aliasesPackage : typeAliasesPackage.split(",")) {
                 List<String> result = new ArrayList<String>();
                 aliasesPackage = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                        + ClassUtils.convertClassNameToResourcePath(aliasesPackage.trim()) + "/"
+                        + ClassUtils.convertClassNameToResourcePath(Objects.requireNonNull(aliasesPackage.trim())) + "/"
                         + DEFAULT_RESOURCE_PATTERN;
                 Resource[] resources = resolver.getResources(aliasesPackage);
                 if (resources != null && resources.length > 0) {
@@ -65,13 +71,13 @@ public class MybatisUtils {
         if (mapperLocations != null) {
             for (String mapperLocation : mapperLocations) {
                 try {
-                    Resource[] mappers = resourceResolver.getResources(mapperLocation);
+                    Resource[] mappers = resourceResolver.getResources(java.util.Objects.requireNonNull(mapperLocation, "mapperLocation不能为null"));
                     resources.addAll(Arrays.asList(mappers));
                 } catch (IOException e) {
                     // ignore
                 }
             }
         }
-        return resources.toArray(new Resource[resources.size()]);
+        return resources != null ? resources.toArray(new Resource[resources.size()]) : new Resource[0];
     }
 }

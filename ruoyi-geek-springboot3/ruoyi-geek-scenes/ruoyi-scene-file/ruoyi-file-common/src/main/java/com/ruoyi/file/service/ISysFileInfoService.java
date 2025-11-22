@@ -47,12 +47,13 @@ public interface ISysFileInfoService {
      */
     default public SysFileInfo buildSysFileInfo(MultipartFile file) {
         String fileType = null;
-        if (file.getOriginalFilename() != null && file.getOriginalFilename().contains(".")) {
-            fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null && originalFilename.contains(".")) {
+            fileType = originalFilename.substring(originalFilename.lastIndexOf('.') + 1);
         }
         SysFileInfo fileInfo = new SysFileInfo();
         String md5 = Md5Utils.getMd5(file);
-        fileInfo.setFileName(file.getOriginalFilename());
+        fileInfo.setFileName(originalFilename);
         fileInfo.setFileType(fileType);
         fileInfo.setFileSize(file.getSize());
         fileInfo.setMd5(md5);
@@ -86,3 +87,4 @@ public interface ISysFileInfoService {
      */
     public int deleteSysFileInfoByFileId(Long fileId);
 }
+

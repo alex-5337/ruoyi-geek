@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -35,7 +36,7 @@ public class LocalBucketFactory extends StorageFactory<LocalBucketProperties, Lo
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         getProperties().forEach((name, props) -> {
             if ("public".equals(props.getPermission())) {
                 registry.addResourceHandler(props.getApi() + "/**")
@@ -44,3 +45,5 @@ public class LocalBucketFactory extends StorageFactory<LocalBucketProperties, Lo
         });
     }
 }
+
+

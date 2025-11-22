@@ -32,7 +32,12 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
     {
         try
         {
-            copyProperties(src, dest);
+            if (src != null && dest != null)
+            {
+                copyProperties(src, dest);
+            }else{
+                throw new IllegalArgumentException("源对象或目标对象不能为空");
+            }
         }
         catch (Exception e)
         {
@@ -50,6 +55,11 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
     {
         // setter方法列表
         List<Method> setterMethods = new ArrayList<Method>();
+
+        if (obj == null)
+        {
+            return setterMethods;
+        }
 
         // 获取所有方法
         Method[] methods = obj.getClass().getMethods();
@@ -79,6 +89,12 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
     {
         // getter方法列表
         List<Method> getterMethods = new ArrayList<Method>();
+        
+        if (obj == null)
+        {
+            return getterMethods;
+        }
+        
         // 获取所有方法
         Method[] methods = obj.getClass().getMethods();
         // 查找getter方法
@@ -105,6 +121,10 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
 
     public static boolean isMethodPropEquals(String m1, String m2)
     {
+        if (m1 == null || m2 == null)
+        {
+            return false;
+        }
         return m1.substring(BEAN_METHOD_PROP_INDEX).equals(m2.substring(BEAN_METHOD_PROP_INDEX));
     }
 }

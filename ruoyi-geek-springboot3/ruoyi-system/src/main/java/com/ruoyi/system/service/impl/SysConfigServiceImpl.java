@@ -64,7 +64,10 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Override
     public String selectConfigByKey(String configKey)
     {
-        String configValue = Convert.toStr(getCache().get(configKey, String.class));
+        if (configKey == null) {
+            return StringUtils.EMPTY;
+        }
+        String configValue = Convert.toStr(getCache().get(configKey, String.class), null);
         if (StringUtils.isNotEmpty(configValue))
         {
             return configValue;
@@ -160,7 +163,10 @@ public class SysConfigServiceImpl implements ISysConfigService
                 throw new ServiceException(String.format("内置参数【%1$s】不能删除 ", config.getConfigKey()));
             }
             configMapper.deleteConfigById(configId);
-            getCache().evict(config.getConfigKey());
+            String configKey = config.getConfigKey();
+            if (configKey != null) {
+                getCache().evict(configKey);
+            }
         }
     }
 
@@ -173,7 +179,11 @@ public class SysConfigServiceImpl implements ISysConfigService
         List<SysConfig> configsList = configMapper.selectConfigList(new SysConfig());
         for (SysConfig config : configsList)
         {
-            getCache().put(config.getConfigKey(), config.getConfigValue());
+            String configKey = config.getConfigKey();
+            String configValue = config.getConfigValue();
+            if (configKey != null && configValue != null) {
+                getCache().put(configKey, configValue);
+            }
         }
     }
 
@@ -224,3 +234,7 @@ public class SysConfigServiceImpl implements ISysConfigService
         return CacheUtils.getCache(CacheConstants.SYS_CONFIG_KEY);
     }
 }
+
+
+
+

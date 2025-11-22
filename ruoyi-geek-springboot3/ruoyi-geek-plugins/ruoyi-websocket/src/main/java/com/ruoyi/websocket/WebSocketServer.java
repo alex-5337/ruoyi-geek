@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -47,7 +48,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      * 连接建立成功调用的方法
      */
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
         boolean semaphoreFlag = false;
         // 尝试获取信号量
         semaphoreFlag = socketSemaphore.tryAcquire();
@@ -77,7 +78,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      * 连接关闭时处理
      */
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) throws Exception {
         LOGGER.info("\n 关闭连接 - {}, 状态: {}", session.getId(), status);
         // 移除用户
         WebSocketUsers.remove(session.getId());
@@ -89,7 +90,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      * 抛出异常时处理
      */
     @Override
-    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+    public void handleTransportError(@NonNull WebSocketSession session, @NonNull Throwable exception) throws Exception {
         if (session.isOpen()) {
             // 关闭连接
             session.close();
@@ -107,7 +108,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      * 服务器接收到客户端消息时调用的方法
      */
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
         String payload = message.getPayload();
         Message msg = JSONObject.parseObject(payload, Message.class);
         WebSocketSession receiver = WebSocketUsers.USERNAME.get(msg.getReceiver());

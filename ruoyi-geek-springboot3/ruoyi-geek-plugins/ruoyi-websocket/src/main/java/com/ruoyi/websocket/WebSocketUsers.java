@@ -3,6 +3,7 @@ package com.ruoyi.websocket;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -95,7 +96,7 @@ public class WebSocketUsers {
     public static void sendMessageToUserByText(WebSocketSession session, String message) {
         if (session != null && session.isOpen()) {
             try {
-                session.sendMessage(new TextMessage(message));
+                session.sendMessage(new TextMessage(Objects.requireNonNull(message)));
             } catch (IOException e) {
                 LOGGER.error("\n[发送消息异常]", e);
             }
@@ -113,7 +114,7 @@ public class WebSocketUsers {
     public static void sendMessageToUser(WebSocketSession session, Message message) {
         if (session != null && session.isOpen()) {
             try {
-                session.sendMessage(new TextMessage(JSONObject.toJSONString(message)));
+                session.sendMessage(new TextMessage(Objects.requireNonNull(JSONObject.toJSONString(message))));
             } catch (IOException e) {
                 LOGGER.error("\n[发送消息异常]", e);
             }

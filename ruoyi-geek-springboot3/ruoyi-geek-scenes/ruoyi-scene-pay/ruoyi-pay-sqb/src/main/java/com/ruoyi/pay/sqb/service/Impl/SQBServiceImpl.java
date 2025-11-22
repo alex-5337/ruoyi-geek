@@ -15,6 +15,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -321,7 +322,7 @@ public class SQBServiceImpl implements ISqbPayService {
     @Override
     public String notify(HttpServletRequest request, HttpServletResponse response, PayOrder payOrder, String type) {
         try {
-            String requestBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+            String requestBody = StreamUtils.copyToString(request.getInputStream(), Objects.requireNonNull(StandardCharsets.UTF_8));
             JSONObject jsonObject = JSONObject.parseObject(requestBody);
             String sign = request.getHeader("Authorization");
             if (!validateSign(requestBody, sign)) {

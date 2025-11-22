@@ -20,7 +20,18 @@ public class MessageUtils
      */
     public static String message(String code, Object... args)
     {
+        if (code == null)
+        {
+            return StringUtils.EMPTY;
+        }
+        
         MessageSource messageSource = SpringUtils.getBean(MessageSource.class);
-        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+        if (messageSource == null)
+        {
+            return StringUtils.EMPTY;
+        }
+        
+        String result = messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+        return result != null ? result : StringUtils.EMPTY;
     }
 }

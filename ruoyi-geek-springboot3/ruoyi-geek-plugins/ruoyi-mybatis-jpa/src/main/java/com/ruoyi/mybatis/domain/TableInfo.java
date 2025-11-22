@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,20 +33,20 @@ public class TableInfo {
     boolean hasDataScopeValue = false;
 
     public TableInfo(Class<?> cls) {
-        this.table = AnnotationUtils.findAnnotation(cls, Table.class);
+        this.table = AnnotationUtils.findAnnotation(Objects.requireNonNull(cls), Table.class);
         if (this.table == null) {
             throw new RuntimeException("error , not find tableName");
         }
         this.tableName = this.table.name();
-        this.enableTableMap = AnnotationUtils.findAnnotation(cls, EnableTableMap.class);
+        this.enableTableMap = AnnotationUtils.findAnnotation(Objects.requireNonNull(cls), EnableTableMap.class);
 
-        Arrays.stream(cls.getDeclaredFields())
-                .filter(field -> AnnotationUtils.findAnnotation(field, Column.class) != null)
+        Arrays.stream(Objects.requireNonNull(cls).getDeclaredFields())
+                .filter(field -> AnnotationUtils.findAnnotation(Objects.requireNonNull(field), Column.class) != null)
                 .map(ColumnInfo::new)
                 .forEach(this.columns::add);
 
-        Arrays.stream(cls.getDeclaredFields())
-                .filter(field -> AnnotationUtils.findAnnotation(field, ColumnMap.class) != null)
+        Arrays.stream(Objects.requireNonNull(cls).getDeclaredFields())
+                .filter(field -> AnnotationUtils.findAnnotation(Objects.requireNonNull(field), ColumnMap.class) != null)
                 .map(MapColumnInfo::new)
                 .forEach(this.mapColumns::add);
 

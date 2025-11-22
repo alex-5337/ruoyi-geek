@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.lang.NonNull;
 
 /** 存储管理器 */
 public abstract class StorageFactory<P, S extends StorageBucket> implements InitializingBean, BeanNameAware {
@@ -64,7 +65,7 @@ public abstract class StorageFactory<P, S extends StorageBucket> implements Init
     }
 
     @Override
-    public void setBeanName(String name) {
+    public void setBeanName(@NonNull String name) {
         this.beanName = name;
     }
 
@@ -76,3 +77,5 @@ public abstract class StorageFactory<P, S extends StorageBucket> implements Init
         this.buckets = buckets;
     }
 }
+
+

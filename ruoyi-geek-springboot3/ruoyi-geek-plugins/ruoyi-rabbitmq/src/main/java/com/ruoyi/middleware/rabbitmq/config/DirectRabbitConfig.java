@@ -1,5 +1,7 @@
 package com.ruoyi.middleware.rabbitmq.config;
 
+import java.util.Objects;
+
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -60,6 +62,6 @@ public class DirectRabbitConfig implements RabbitListenerConfigurer {
 
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar rabbitListenerEndpointRegistrar) {
-        rabbitListenerEndpointRegistrar.setMessageHandlerMethodFactory(myHandlerMethodFactory());
+        rabbitListenerEndpointRegistrar.setMessageHandlerMethodFactory(Objects.requireNonNull(myHandlerMethodFactory()));
     }
 }
